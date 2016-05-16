@@ -1,12 +1,6 @@
 ---
 title: API Reference
 
-language_tabs:
-  - shell
-
-includes:
-  - errors
-
 search: true
 ---
 

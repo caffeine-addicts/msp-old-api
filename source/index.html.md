@@ -3,12 +3,6 @@ title: API Reference
 
 language_tabs:
   - shell
-  - ruby
-  - python
-
-toc_footers:
-  - <a href='#'>Sign Up for a Developer Key</a>
-  - <a href='https://github.com/tripit/slate'>Documentation Powered by Slate</a>
 
 includes:
   - errors
@@ -18,151 +12,99 @@ search: true
 
 # Introduction
 
-Welcome to the Kittn API! You can use our API to access Kittn API endpoints, which can get information on various cats, kittens, and breeds in our database.
+This API documentation quickly lays out the process of sending across Survey results through our RESTful API. Sending over 
+results is a 2 step process, first the lead must be sent across then the survey responses.
 
-We have language bindings in Shell, Ruby, and Python! You can view code examples in the dark area to the right, and you can switch the programming language of the examples with the tabs in the top right.
 
-This example API documentation page was created with [Slate](https://github.com/tripit/slate). Feel free to edit it and use it as a base for your own API's documentation.
+# Leads
 
-# Authentication
+## Post a Lead
 
-> To authorize, use this code:
+> This request will return JSON structured as follows:
 
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
+```json
+{
+  "success": true,
+  "data": {
+    "lead_id": 55406
+  }
+}
 ```
 
-```python
-import kittn
+This endpoint posts lead details into our system
 
-api = kittn.authorize('meowmeowmeow')
+### HTTP Request
+
+`POST https://teleoutsourcing.mysecureportal.net/api/leads/`
+
+### Query Parameters
+
+Parameter | Required | Type | Description
+--------- | -------- | ---- | -----------
+first_name | true | string | The first name of the lead
+last_name | true | string | The last name of the lead
+address1 | true | string | First line of the lead's address
+address2 | false | string | Second line of the lead's address
+address3 | false | string | Third line of the lead's address
+town | true | string | The town the lead lives in
+county | false | string | The county the lead lives in
+postal_code | true | string | The postal code of the lead
+home_number | true (if no mobile number) | integer | The home telephone number of the lead (no 44 prefix, e.g. 1253817220)
+mobile_number | true (if no home number) | integer | The mobile telephone number of the lead (no 44 prefix, e.g. 7958991982)
+email | false | string | The e-mail address of the lead
+
+# Surveys
+
+## Post Survey Results
+
+> This request will return JSON structured as follows:
+
+```json
+{
+  "success": true,
+  "data": {
+    "survey_log_id": 86170
+  }
+}
 ```
 
-```shell
-# With shell, you can just pass the correct header with each request
-curl "api_endpoint_here"
-  -H "Authorization: meowmeowmeow"
-```
-
-> Make sure to replace `meowmeowmeow` with your API key.
-
-Kittn uses API keys to allow access to the API. You can register a new Kittn API key at our [developer portal](http://example.com/developers).
-
-Kittn expects for the API key to be included in all API requests to the server in a header that looks like the following:
-
-`Authorization: meowmeowmeow`
-
-<aside class="notice">
-You must replace <code>meowmeowmeow</code> with your personal API key.
-</aside>
-
-# Kittens
-
-## Get All Kittens
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get()
-```
-
-```shell
-curl "http://example.com/api/kittens"
-  -H "Authorization: meowmeowmeow"
-```
-
-> The above command returns JSON structured like this:
+> An example of the json encoded string that should include questions and responses is as follows:
 
 ```json
 [
   {
-    "id": 1,
-    "name": "Fluffums",
-    "breed": "calico",
-    "fluffiness": 6,
-    "cuteness": 7
+    "question_id": 121,
+    "response": 1993
   },
   {
-    "id": 2,
-    "name": "Max",
-    "breed": "unknown",
-    "fluffiness": 5,
-    "cuteness": 10
-  }
+    "question_id": 132,
+    "response": 1982
+  },
+  {
+    "question_id": 135,
+    "response": "£300"
+  },
+  {
+    "question_id": 142,
+    "response": 2089
+  },
 ]
 ```
 
-This endpoint retrieves all kittens.
+This endpoint posts results of a survey and associates them with a lead
 
 ### HTTP Request
 
-`GET http://example.com/api/kittens`
+`POST https://teleoutsourcing.mysecureportal.net/api/leads/<lead_id>/surveys/<survey_id>`
 
 ### Query Parameters
 
-Parameter | Default | Description
---------- | ------- | -----------
-include_cats | false | If set to true, the result will also include cats.
-available | true | If set to false, the result will include kittens that have already been adopted.
+Parameter | Required | Type | Description
+--------- | -------- | ---- | -----------
+completed | true | boolean | The the survey was fully completed then true, if only partially completed then false
+responses | true | string | A Json encoded array featuring an array of all questions and responses (see right for example)
 
-<aside class="success">
-Remember — a happy kitten is an authenticated kitten!
-</aside>
+### Responses
 
-## Get a Specific Kitten
-
-```ruby
-require 'kittn'
-
-api = Kittn::APIClient.authorize!('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```python
-import kittn
-
-api = kittn.authorize('meowmeowmeow')
-api.kittens.get(2)
-```
-
-```shell
-curl "http://example.com/api/kittens/2"
-  -H "Authorization: meowmeowmeow"
-```
-
-> The above command returns JSON structured like this:
-
-```json
-{
-  "id": 2,
-  "name": "Max",
-  "breed": "unknown",
-  "fluffiness": 5,
-  "cuteness": 10
-}
-```
-
-This endpoint retrieves a specific kitten.
-
-<aside class="warning">Inside HTML code blocks like this one, you can't use Markdown, so use <code>&lt;code&gt;</code> blocks to denote code.</aside>
-
-### HTTP Request
-
-`GET http://example.com/kittens/<ID>`
-
-### URL Parameters
-
-Parameter | Description
---------- | -----------
-ID | The ID of the kitten to retrieve
-
+A full list of question ID's and response ID's will be provided on any update to the script and the responses posted will 
+require to be changed to match the given update. The appropriate Survey ID will also be given in this same document.
